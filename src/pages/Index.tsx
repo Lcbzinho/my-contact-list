@@ -1,19 +1,34 @@
 import { useState } from "react";
-import { ContactForm } from "@/components/ContactForm";
-import { ContactTable } from "@/components/ContactTable";
-import { ContactIcon } from "lucide-react";
+import { TaskForm } from "@/components/TaskForm";
+import { TaskList } from "@/components/TaskList";
+import { CheckSquare } from "lucide-react";
 
-interface Contact {
+interface Task {
   id: string;
-  nome: string;
-  telefone: string;
+  name: string;
+  completed: boolean;
 }
 
 const Index = () => {
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-  const handleAddContact = (newContact: Contact) => {
-    setContacts(prev => [...prev, newContact]);
+  const handleAddTask = (taskName: string) => {
+    const newTask: Task = {
+      id: crypto.randomUUID(),
+      name: taskName,
+      completed: false,
+    };
+    setTasks(prev => [...prev, newTask]);
+  };
+
+  const handleToggleTask = (taskId: string) => {
+    setTasks(prev => 
+      prev.map(task => 
+        task.id === taskId 
+          ? { ...task, completed: !task.completed }
+          : task
+      )
+    );
   };
 
   return (
@@ -23,14 +38,14 @@ const Index = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-gradient-primary">
-              <ContactIcon className="h-6 w-6 text-primary-foreground" />
+              <CheckSquare className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Minha Lista de Contatos
+                Lista de Tarefas
               </h1>
               <p className="text-muted-foreground">
-                Gerencie seus contatos de forma simples e elegante
+                Organize suas tarefas de forma simples e elegante
               </p>
             </div>
           </div>
@@ -39,23 +54,19 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="grid gap-8 lg:grid-cols-2">
-          {/* Contact Form */}
-          <div className="lg:sticky lg:top-24 lg:self-start">
-            <ContactForm onAddContact={handleAddContact} />
-          </div>
+        <div className="flex flex-col items-center gap-8">
+          {/* Task Form */}
+          <TaskForm onAddTask={handleAddTask} />
 
-          {/* Contact Table */}
-          <div>
-            <ContactTable contacts={contacts} />
-          </div>
+          {/* Task List */}
+          <TaskList tasks={tasks} onToggleTask={handleToggleTask} />
         </div>
       </main>
 
       {/* Footer */}
       <footer className="border-t border-border/50 bg-card/30 backdrop-blur-sm mt-16">
         <div className="container mx-auto px-4 py-6 text-center text-muted-foreground">
-          <p>Sistema de contatos moderno e responsivo</p>
+          <p>Sistema de tarefas moderno e responsivo</p>
         </div>
       </footer>
     </div>
